@@ -6,6 +6,13 @@ typedef int bool;
 #define true 1
 #define false 0
 
+#define ADD 1
+#define REMOVE 2
+#define CHECK_EXPIRED 3
+#define PRINT 4
+#define UPDATE 5
+#define EXIT 6
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -105,6 +112,7 @@ void CheckExpiredProducts(super_market super) {
 }
 
 void PrintProducts(super_market super) {
+	// TODO : Print is not finished
 	for (int i = 0; i < sizeof(&(super.product_list)); i++) {
 		product* prod = (*super.product_list + i);
 
@@ -116,8 +124,53 @@ void UpdateProduct(super_market super) {
 
 }
 
+int GetAction() {
+	int res = 0;
+	printf("%s", main_interface);
+
+	scanf_s("%d", &res);
+
+	while (res > EXIT || res < ADD) {
+		printf("\nInvalid Action, plear retype your action:");
+		scanf_s("%d", &res);
+	}
+
+	return res;
+}
+
 int main() {
+	
+
 	super_market super;
+	int action = 0;
 	super.product_list = malloc(sizeof(product));
+
+	action = GetAction();
+
+	while (action != EXIT) {
+		switch(action)
+		{
+			case ADD:
+				AddProduct(super);
+				break;
+			case REMOVE:
+				RemoveProduct(super);
+				break;
+			case CHECK_EXPIRED:
+				CheckExpiredProducts(super);
+				break;
+			case PRINT:
+				PrintProducts(super);
+				break;
+			case UPDATE:
+				UpdateProduct(super);
+				break;
+			default:
+				break;
+		}
+
+		action = GetAction();
+	}
+
 	return 0;
 }
