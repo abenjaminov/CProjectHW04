@@ -161,7 +161,7 @@ void AddProduct(super_market* super) {
 		printf("This product already exist, please enter the number of products to add\t");
 		scanf(" %d", &availableToAdd);
 		super->product_list[prod_index]->available += availableToAdd;
-		// add "additional x products of y added"
+		printf("Additional %d products of %s added\n", availableToAdd, super->product_list[prod_index]->product_name);
 	}
 	else 
 	{
