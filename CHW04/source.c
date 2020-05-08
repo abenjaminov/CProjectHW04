@@ -90,7 +90,7 @@ typedef struct date { int year; int month; int day; } date;
 typedef struct product { char * product_name; char * product_category; char * barcode; int available; double price; date * expire_date; } product;
 typedef struct super_market { product ** product_list; int number_of_products; } super_market;
 
-int ProductExists(super_market* super, char* productBarcode) {
+int GetProductIndex(super_market* super, char* productBarcode) {
 	for (int i = 0; i < super->number_of_products; i++) {
 		if (strcmp(productBarcode, super->product_list[i]->barcode) == 0) {
 			return i;
@@ -146,7 +146,7 @@ void AddProduct(super_market* super) {
 	printf("Please enter product barcode:\t");
 	scanf("%s", (new_product->barcode));
 
-	int prod_index = ProductExists(super, new_product->barcode);
+	int prod_index = GetProductIndex(super, new_product->barcode);
 
 	if (prod_index != -1)
 	{
