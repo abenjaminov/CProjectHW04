@@ -97,7 +97,7 @@ int ProductExists(super_market* super, char* productBarcode) {
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 bool CanAddProducts(super_market* super, int amount) {
@@ -137,9 +137,8 @@ void AddProduct(super_market* super) {
 		printf("Can't add more products, not enough space!");
 		return;
 	}
-
 	
-	char strDate[DATE_LENGTH];
+	char strDate[DATE_LENGTH + 1];
 
 	product* new_product = GetNewProduct();
 
@@ -149,7 +148,7 @@ void AddProduct(super_market* super) {
 
 	int prod_index = ProductExists(super, new_product->barcode);
 
-	if (prod_index)
+	if (prod_index != -1)
 	{
 		int availableToAdd;
 		printf("This product already exist, please enter the number of products to add\t");
@@ -173,11 +172,10 @@ void AddProduct(super_market* super) {
 
 		FillDate(&strDate, new_product->expire_date);
 
-		// Add by ammount
-		realloc(super->product_list, sizeof(super->number_of_products) + sizeof(product*));
-
-		(super->product_list)[super->number_of_products] = new_product;
 		super->number_of_products++;
+		realloc(super->product_list, super->number_of_products * sizeof(product*));
+
+		(super->product_list)[super->number_of_products - 1] = new_product;
 
 		printf("The product %s -barcode:%s, added successfully\n", new_product->product_name, new_product->barcode);
 	}
