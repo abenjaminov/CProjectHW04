@@ -154,6 +154,7 @@ void AddProduct(super_market* super) {
 		printf("This product already exist, please enter the number of products to add\t");
 		scanf(" %d", &availableToAdd);
 		super->product_list[prod_index]->available += availableToAdd;
+		// add "additional x products of y added"
 	}
 	else 
 	{
@@ -170,7 +171,7 @@ void AddProduct(super_market* super) {
 
 		// TODO : Check if can add, check amount and finally allocate if possible
 
-		FillDate(&strDate, new_product->expire_date);
+		FillDate(strDate, new_product->expire_date);
 
 		super->number_of_products++;
 		realloc(super->product_list, super->number_of_products * sizeof(product*));
