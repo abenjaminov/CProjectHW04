@@ -146,13 +146,13 @@ void FillDate(char* strDate, date* date) {
 
 	date->day = ((strDate[0] - '0') * 10) + (strDate[1] - '0');
 	date->month = ((strDate[3] - '0') * 10) + (strDate[4] - '0');
-	date->year = ((strDate[6] - '0') * 1000) + ((strDate[7] - '0') * 100) + ((strDate[8] - '0') * 10) + (strDate[9] - '0');
+	date->year = ((strDate[6] - '0') * 10) + ((strDate[7] - '0') * 1);
 }
 
 
 void AddProduct(super_market* super) {
 	/*
-	Inputs: :super: - pointer to the struck that holds supermarket data.
+	Inputs: :super: - pointer to the struct that holds supermarket data.
 	Return: None.
 	Functionality: Add another item to the store as a product struct, populate all fields.
 	*/
@@ -214,14 +214,52 @@ void RemoveProduct(super_market* super) {
 }
 
 
-void CheckExpiredProducts(super_market* super) {
+int _isExpired(char* inDate, date* prod_date){
+	int inDay = ((inDate[0] - '0') * 10) + (inDate[1] - '0');
+	int inMonth = ((inDate[3] - '0') * 10) + (inDate[4] - '0');
+	int inYear = ((inDate[6] - '0') * 10) + (inDate[7] - '0');
 
+	if (inYear > prod_date->year) return 1;
+	if (inMonth > prod_date->month) return 1;
+	if (inDay > prod_date->day) return 1;
+	
+	return 0;
+}
+
+void _printExpired(super_market* super, int index){
+	printf(expired_product_name);
+	printf("%s", super->product_list[index]->product_name);
+	printf(expired_product_barcode);
+	printf("%s", super->product_list[index]->barcode);
+	printf(expired_product_date);
+	printf("%d/%d/%d\n", super->product_list[index]->expire_date->day,
+					   super->product_list[index]->expire_date->month,
+					   super->product_list[index]->expire_date->year);
+}
+
+
+void CheckExpiredProducts(super_market* super) {
+	char date_to_check[DATE_LENGTH+1];
+	int flag = 0;
+	printf(expired_date_check);
+	scanf("%s", date_to_check);
+
+	for (int counter=0; counter < super->number_of_products; counter++){
+		if (_isExpired(date_to_check, super->product_list[counter]->expire_date)){
+			if (flag ==0 ) {
+				// TFIRA, just stupid design. will fix.
+				printf(expired_products);
+				flag =1;
+				}
+			_printExpired(super, counter);
+		}
+	}
 }
 
 
 void PrintProducts(super_market* super) {
 	/*
-	Inputs: :super: - pointer to the struck that holds supermarket data.
+	Inputs: :super: - pointer to the struct that holds supermarket data.
 	Return: None.
 	Functionality: Print all fields of all products in the store.
 	*/
@@ -243,7 +281,7 @@ void PrintProducts(super_market* super) {
 void _updateField(super_market* super, int idx_to_update, int field){
 	/*
 	Inputs: 
-			:super: - pointer to the struck that holds supermarket data. (super_market*)
+			:super: - pointer to the struct that holds supermarket data. (super_market*)
 			:idx_to_update: - index of the product in the store. (int)
 			:field: - which field to update, based on popup message. (int)
 	Return: None.
@@ -278,7 +316,7 @@ void _updateField(super_market* super, int idx_to_update, int field){
 
 void UpdateProduct(super_market* super) {
 	/*
-	Inputs: :super: - pointer to the struck that holds supermarket data.
+	Inputs: :super: - pointer to the struct that holds supermarket data.
 	Return: None.
 	Functionality: Function that updates a field in an existing product.
 	*/
@@ -306,6 +344,10 @@ void UpdateProduct(super_market* super) {
 }
 
 
+void CleanupAndExit(super_market* super){
+
+}
+
 
 int GetAction() {
 	int res = 0;
@@ -320,6 +362,7 @@ int GetAction() {
 
 	return res;
 }
+
 
 int main() {
 	super_market super;
@@ -354,7 +397,7 @@ int main() {
 		action = GetAction();
 	}
 
-	printf("Exit...");
+	printf("exit...");
 
 	return 0;
 }
