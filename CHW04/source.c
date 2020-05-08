@@ -139,8 +139,6 @@ int GetAction() {
 }
 
 int main() {
-	
-
 	super_market super;
 	int action = 0;
 	super.product_list = malloc(sizeof(product));
@@ -171,6 +169,8 @@ int main() {
 
 		action = GetAction();
 	}
+
+	printf("Exit...");
 
 	return 0;
 }
