@@ -14,6 +14,13 @@ typedef int bool;
 #define UPDATE 5
 #define EXIT 6
 
+
+#define UPDATE_PRODUCT_NAME 1
+#define UPDATE_PRODUCT_CATEGORY 2
+#define UPDATE_PRODUCT_QUANTITY 3
+#define UPDATE_PRODUCT_PRICE 4
+#define UPDATE_PRODUCT_EXPIRATION 5
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -205,18 +212,64 @@ void PrintProducts(super_market* super) {
 }
 
 void UpdateProduct(super_market* super) {
+	char* barcode[BARCODE_LENGTH] = {'\0'};
+	int idx_to_update = -1, selection=0;
 
+	// Check if the supermarket is empty
+	if (super->number_of_products == 0){
+		printf("No products in the store!\n");
+	}
+	else{
+		// Ask for ther user's barcode
+		while (idx_to_update == -1){
+			printf(update_barcode);
+			scanf("%s", barcode);
+			idx_to_update = GetProductIndex(super, barcode);
+			printf(update_barcode_notFound);
+		}
+
+		// update product at :idx_to_update: with the new details:
+		printf(update_interface_string);
+		scanf("%d", &selection);
+
+		switch (selection)
+		{
+		case UPDATE_PRODUCT_NAME:
+			printf(update_product_name);
+			scanf("\n%[^\n]", super->product_list[idx_to_update]->product_name);
+			break;
+		case UPDATE_PRODUCT_CATEGORY:
+			printf(update_product_category);
+			scanf("\n%[^\n]", super->product_list[idx_to_update]->product_category);
+			break;
+		case UPDATE_PRODUCT_QUANTITY:
+			printf(update_product_number);
+			scanf(" %d", &(super->product_list[idx_to_update]->available));
+			break;
+		case UPDATE_PRODUCT_PRICE:
+			printf(update_product_price);
+			scanf(" %lf", &(super->product_list[idx_to_update]->price));
+			break;
+		case UPDATE_PRODUCT_EXPIRATION:
+			printf(update_product_date);
+			scanf(" %s", &(super->product_list[idx_to_update]->expire_date));
+			break;
+		}
+
+	}
 }
+
+
 
 int GetAction() {
 	int res = 0;
 	printf("%s", main_interface);
 
-	scanf_s("%d", &res);
+	scanf("%d", &res);
 
 	while (res > EXIT || res < ADD) {
 		printf("\nInvalid Action, please retype your action:");
-		scanf_s(" %d", &res);
+		scanf(" %d", &res);
 	}
 
 	return res;
