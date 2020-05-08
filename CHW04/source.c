@@ -190,7 +190,6 @@ void CheckExpiredProducts(super_market* super) {
 }
 
 void PrintProducts(super_market* super) {
-	// TODO : Print is not finished
 	for (int i = 0; i < super->number_of_products; i++) {
 		product* prod = super->product_list[i];
 
