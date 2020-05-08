@@ -215,6 +215,14 @@ void RemoveProduct(super_market* super) {
 
 
 int _isExpired(char* inDate, date* prod_date){
+	/*
+	Inputs: 
+			:inDate:    - date string in the required format.
+			:prod_date: - pointed to the date field in the product struct.
+	Return: 1 if the product is expired, 0 if it is not.
+	Functionality: Check if :inDate: > :prod_date:.
+	*/
+
 	int inDay = ((inDate[0] - '0') * 10) + (inDate[1] - '0');
 	int inMonth = ((inDate[3] - '0') * 10) + (inDate[4] - '0');
 	int inYear = ((inDate[6] - '0') * 10) + (inDate[7] - '0');
@@ -227,6 +235,14 @@ int _isExpired(char* inDate, date* prod_date){
 }
 
 void _printExpired(super_market* super, int index){
+	/*
+	Inputs: 
+			:super: - pointer to the struct that holds supermarket data.
+			:index: - number of the product in the products array which we want to print
+					  the values of.
+	Return: None.
+	Functionality: Print in the required format.
+	*/
 	printf(expired_product_name);
 	printf("%s", super->product_list[index]->product_name);
 	printf(expired_product_barcode);
@@ -239,6 +255,12 @@ void _printExpired(super_market* super, int index){
 
 
 void CheckExpiredProducts(super_market* super) {
+	/*
+	Inputs: :super: - pointer to the struct that holds supermarket data.
+	Return: None.
+	Functionality: Check which products are expired, call the _printExpired function.
+	*/
+
 	char date_to_check[DATE_LENGTH+1];
 	int flag = 0;
 	printf(expired_date_check);
