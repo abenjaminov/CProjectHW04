@@ -71,7 +71,7 @@ const char * print_total_number = "\nTotal number of products: ";
 const char * update_barcode = "\nPlease enter product barcode you want to update:";
 const char * update_barcode_notFound = "\nCouldn't find the product barcode, try again...";
 const char * update_interface_string = ("\nWhat do you want to update?\n"\
-	"        1. Product namet\n"\
+	"        1. Product name\n"\
 	"        2. Product category\n"\
 	"        3. Product quantity\n"\
 	"        4. Product price\n"\
@@ -84,7 +84,7 @@ const char * update_product_price = "\nPlease enter new product price:";
 const char * update_product_date = "\nPlease enter new product expire date[dd/mm/yy]:";
 
 //operation 6 constant strings
-exitProgram = "\nexit...";
+const char * exitProgram = "\nexit...";
 
 typedef struct date { int year; int month; int day; } date;
 typedef struct product { char * product_name; char * product_category; char * barcode; int available; double price; date * expire_date; } product;
