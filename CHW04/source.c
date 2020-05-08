@@ -168,7 +168,7 @@ void AddProduct(super_market* super) {
 		printf("Please enter expiration date of the product[dd/mm/yy]:\t");
 		scanf(" %s", &strDate);
 
-		// Check if can add, check amount and finally allocate if possible
+		// TODO : Check if can add, check amount and finally allocate if possible
 
 		FillDate(&strDate, new_product->expire_date);
 
