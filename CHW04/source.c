@@ -3,10 +3,12 @@
 #define MAX_CATEGORY_LENGTH 10
 #define DATE_LENGTH 10
 #define BARCODE_LENGTH 12
+
 typedef int bool;
 #define true 1
 #define false 0
 
+// Main Menu Enums
 #define ADD 1
 #define REMOVE 2
 #define CHECK_EXPIRED 3
@@ -14,7 +16,7 @@ typedef int bool;
 #define UPDATE 5
 #define EXIT 6
 
-
+// Update Enums
 #define UPDATE_PRODUCT_NAME 1
 #define UPDATE_PRODUCT_CATEGORY 2
 #define UPDATE_PRODUCT_QUANTITY 3
@@ -37,8 +39,8 @@ const char * main_interface = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"\
 "	6. EXIT SYSTEM\n"\
 "Please choose operation[1 - 6]:";
 
-//operation 1 constant strings
 
+//operation 1 constant strings
 const char *  adding_product_barcode = "Please enter product barcode:";
 const char * barcode_already_exist = "This product already exist, please enter the number of products to add:";
 const char * too_much_products = "Can't add more products, not enough space";
@@ -47,6 +49,7 @@ const char * adding_product_category = "Please enter product category:";
 const char * adding_product_number = "Please enter number of products to add:";
 const char * adding_product_price = "Please enter the price of the product:";
 const char * adding_product_date = "Please enter expire date of the product[dd/mm/yy]:";
+
 
 //operation 2 constant strings
 const char * store_empty = "\nThe store is empty!";
@@ -74,6 +77,7 @@ const char * print_product_price = "\nProduct price: ";
 const char * print_product_expireDate = "\nProduct expire date: ";
 const char * print_total_number = "\nTotal number of products: ";
 
+
 //operation 5 constant strings
 const char * update_barcode = "\nPlease enter product barcode you want to update:";
 const char * update_barcode_notFound = "\nCouldn't find the product barcode, try again...";
@@ -90,8 +94,11 @@ const char * update_product_number = "\nPlease enter new product quantity:";
 const char * update_product_price = "\nPlease enter new product price:";
 const char * update_product_date = "\nPlease enter new product expire date[dd/mm/yy]:";
 
+
 //operation 6 constant strings
 const char * exitProgram = "\nexit...";
+
+// ---------- TYPEDEFS -----------------
 
 typedef struct date { int year; int month; int day; } date;
 typedef struct product { char * product_name; char * product_category; char * barcode; int available; double price; date * expire_date; } product;
@@ -104,7 +111,6 @@ int GetProductIndex(super_market* super, char* productBarcode) {
 			return i;
 		}
 	}
-
 	return -1;
 }
 
@@ -115,6 +121,12 @@ bool CanAddProducts(super_market* super, int amount) {
 
 
 product* GetNewProduct() {
+	/*
+	Inputs: None.
+	Return: A pointer to a block in memtory, allocated for a product.
+	Functionality: Allocate memory for the product we are about to add.
+	*/
+
 	product* new_product = (product*) malloc(sizeof(product));
 
 	if (new_product == NULL) exit(1);
@@ -342,7 +354,7 @@ void UpdateProduct(super_market* super) {
 	Return: None.
 	Functionality: Function that updates a field in an existing product.
 	*/
-	char* barcode[BARCODE_LENGTH] = {'\0'};
+	char barcode[BARCODE_LENGTH] = {'\0'};
 	int idx_to_update = -1, selection=0;
 
 	// Check if the supermarket is empty
@@ -367,11 +379,26 @@ void UpdateProduct(super_market* super) {
 
 
 void CleanupAndExit(super_market* super){
+	/*
+	Inputs: :super: - pointer to the struct that holds supermarket data.
+	Return: None.
+	Functionality: Iterates over the pointer array and clears the allocated memory.
+	*/
+	for (int idx=0; idx < super->number_of_products; idx++){
+		free(super->product_list[idx]);
+	}
 
+	printf(exitProgram);
 }
 
 
 int GetAction() {
+	/*
+	Inputs: None.
+	Return: The user's selection as a main menu navigation number (int).
+	Functionality: Allow users to traverse the main menu.
+	*/
+
 	int res = 0;
 	printf("%s", main_interface);
 
@@ -392,7 +419,7 @@ int main() {
 	super.product_list = (product**)calloc(0, sizeof(product*));
 	super.number_of_products = 0;
 
-	action = GetAction();
+	action = GetAction();  // Get user selection
 
 	while (action != EXIT) {
 		switch(action)
@@ -418,8 +445,7 @@ int main() {
 
 		action = GetAction();
 	}
-
-	printf("exit...");
-
+	// Exit was selected, clean up and exit.
+	CleanupAndExit(&super);
 	return 0;
 }
