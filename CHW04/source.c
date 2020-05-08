@@ -191,10 +191,16 @@ void CheckExpiredProducts(super_market* super) {
 
 void PrintProducts(super_market* super) {
 	// TODO : Print is not finished
-	for (int i = 0; i < sizeof(&(super->product_list)); i++) {
-		product* prod = (*super->product_list + i);
+	for (int i = 0; i < super->number_of_products; i++) {
+		product* prod = super->product_list[i];
 
-		printf("%s", prod->barcode);
+		printf("-------------\n");
+		printf("Product name: %s\n", prod->product_name);
+		printf("Product barcode: %s\n", prod->barcode);
+		printf("Product category: %s\n", prod->product_category);
+		printf("Product available quantity: %d\n", prod->available);
+		printf("Product price: %0.2f\n", prod->price);
+		printf("Product expiration date: %d/%d/%d\n", prod->expire_date->day, prod->expire_date->month, prod->expire_date->year);
 	}
 }
 
