@@ -97,6 +97,7 @@ typedef struct date { int year; int month; int day; } date;
 typedef struct product { char * product_name; char * product_category; char * barcode; int available; double price; date * expire_date; } product;
 typedef struct super_market { product ** product_list; int number_of_products; } super_market;
 
+
 int GetProductIndex(super_market* super, char* productBarcode) {
 	for (int i = 0; i < super->number_of_products; i++) {
 		if (strcmp(productBarcode, super->product_list[i]->barcode) == 0) {
@@ -107,9 +108,11 @@ int GetProductIndex(super_market* super, char* productBarcode) {
 	return -1;
 }
 
+
 bool CanAddProducts(super_market* super, int amount) {
 	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
 }
+
 
 product* GetNewProduct() {
 	product* new_product = (product*) malloc(sizeof(product));
@@ -131,13 +134,29 @@ product* GetNewProduct() {
 	return new_product;
 }
 
+
 void FillDate(char* strDate, date* date) {
+	/*
+	Inputs: 
+			:strDate: - a string in dd/mm/yy format to represent a date.
+			:date: - pointer to the struct date (of a product).
+	Return: None.
+	Functionality: Populate the expiration date of a product easily.
+	*/
+
 	date->day = ((strDate[0] - '0') * 10) + (strDate[1] - '0');
 	date->month = ((strDate[3] - '0') * 10) + (strDate[4] - '0');
 	date->year = ((strDate[6] - '0') * 1000) + ((strDate[7] - '0') * 100) + ((strDate[8] - '0') * 10) + (strDate[9] - '0');
 }
 
+
 void AddProduct(super_market* super) {
+	/*
+	Inputs: :super: - pointer to the struck that holds supermarket data.
+	Return: None.
+	Functionality: Add another item to the store as a product struct, populate all fields.
+	*/
+
 	// Guard
 	// More than 20 products cant be added
 	if (!CanAddProducts(super, 0)) {
@@ -189,15 +208,24 @@ void AddProduct(super_market* super) {
 	}
 }
 
+
 void RemoveProduct(super_market* super) {
 
 }
+
 
 void CheckExpiredProducts(super_market* super) {
 
 }
 
+
 void PrintProducts(super_market* super) {
+	/*
+	Inputs: :super: - pointer to the struck that holds supermarket data.
+	Return: None.
+	Functionality: Print all fields of all products in the store.
+	*/
+
 	for (int i = 0; i < super->number_of_products; i++) {
 		product* prod = super->product_list[i];
 
@@ -211,28 +239,18 @@ void PrintProducts(super_market* super) {
 	}
 }
 
-void UpdateProduct(super_market* super) {
-	char* barcode[BARCODE_LENGTH] = {'\0'};
-	int idx_to_update = -1, selection=0;
 
-	// Check if the supermarket is empty
-	if (super->number_of_products == 0){
-		printf("No products in the store!\n");
-	}
-	else{
-		// Ask for ther user's barcode
-		while (idx_to_update == -1){
-			printf(update_barcode);
-			scanf("%s", barcode);
-			idx_to_update = GetProductIndex(super, barcode);
-			printf(update_barcode_notFound);
-		}
-
-		// update product at :idx_to_update: with the new details:
-		printf(update_interface_string);
-		scanf("%d", &selection);
-
-		switch (selection)
+void _updateField(super_market* super, int idx_to_update, int field){
+	/*
+	Inputs: 
+			:super: - pointer to the struck that holds supermarket data. (super_market*)
+			:idx_to_update: - index of the product in the store. (int)
+			:field: - which field to update, based on popup message. (int)
+	Return: None.
+	Functionality: Function that updates a specific field in an existing product,
+				   based on user selection.
+	*/
+	switch (field)
 		{
 		case UPDATE_PRODUCT_NAME:
 			printf(update_product_name);
@@ -255,7 +273,35 @@ void UpdateProduct(super_market* super) {
 			scanf(" %s", &(super->product_list[idx_to_update]->expire_date));
 			break;
 		}
+}
 
+
+void UpdateProduct(super_market* super) {
+	/*
+	Inputs: :super: - pointer to the struck that holds supermarket data.
+	Return: None.
+	Functionality: Function that updates a field in an existing product.
+	*/
+	char* barcode[BARCODE_LENGTH] = {'\0'};
+	int idx_to_update = -1, selection=0;
+
+	// Check if the supermarket is empty
+	if (super->number_of_products == 0){
+		printf("No products in the store!\n");
+	}
+	else{
+		// Ask for ther user's barcode
+		while (idx_to_update == -1){
+			printf(update_barcode);
+			scanf("%s", barcode);
+			idx_to_update = GetProductIndex(super, barcode);
+			printf(update_barcode_notFound);
+		}
+
+		// update product at :idx_to_update: with the new details:
+		printf(update_interface_string);
+		scanf("%d", &selection);
+		_updateField(super, idx_to_update, selection);
 	}
 }
 
