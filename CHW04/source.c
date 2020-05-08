@@ -1,6 +1,7 @@
 #define MAX_NUM_PRODUCTS 20
 #define MAX_PRODUCT_NAME_LENGTH 20
 #define MAX_CATEGORY_LENGTH 10
+#define DATE_LENGTH 10
 #define BARCODE_LENGTH 12
 typedef int bool;
 #define true 1
@@ -89,38 +90,117 @@ typedef struct date { int year; int month; int day; } date;
 typedef struct product { char * product_name; char * product_category; char * barcode; int available; double price; date * expire_date; } product;
 typedef struct super_market { product ** product_list; int number_of_products; } super_market;
 
-bool ProductExists(super_market super, char* productBarcode) {
-	for (int i = 0; i < sizeof(&(super.product_list)); i++) {
-		if (strcmp(productBarcode, (*super.product_list + i)->barcode)) {
-			return true;
+int ProductExists(super_market* super, char* productBarcode) {
+	for (int i = 0; i < super->number_of_products; i++) {
+		if (strcmp(productBarcode, super->product_list[i]->barcode) == 0) {
+			return i;
 		}
 	}
 
-	return false;
+	return 0;
 }
 
-void AddProduct(super_market super) {
+bool CanAddProducts(super_market* super, int amount) {
+	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
+}
+
+product* GetNewProduct() {
+	product* new_product = (product*) malloc(sizeof(product));
+
+	if (new_product == NULL) exit(1);
+
+	new_product->barcode = (char*)malloc(sizeof(char) * (BARCODE_LENGTH + 1));
+	new_product->available = 0;
+	new_product->price = 0;
+	new_product->product_category = (char*)malloc(sizeof(char) * (MAX_CATEGORY_LENGTH + 1));
+	new_product->product_name = (char*)malloc(sizeof(char) * (MAX_PRODUCT_NAME_LENGTH + 1));
+	new_product->expire_date = (date*)malloc(sizeof(date));
+
+	if (new_product->barcode == NULL || 
+		new_product->product_category == NULL || 
+		new_product->product_name == NULL || 
+		new_product->expire_date == NULL) exit(1);
+
+	return new_product;
+}
+
+void FillDate(char* strDate, date* date) {
+	date->day = ((strDate[0] - '0') * 10) + (strDate[1] - '0');
+	date->month = ((strDate[3] - '0') * 10) + (strDate[4] - '0');
+	date->year = ((strDate[6] - '0') * 1000) + ((strDate[7] - '0') * 100) + ((strDate[8] - '0') * 10) + (strDate[9] - '0');
+}
+
+void AddProduct(super_market* super) {
+	// Guard
+	// More than 20 products cant be added
+	if (!CanAddProducts(super, 0)) {
+		printf("Can't add more products, not enough space!");
+		return;
+	}
+
+	
+	char strDate[DATE_LENGTH];
+
+	product* new_product = GetNewProduct();
+
+	// Get Input, and add
+	printf("Please enter product barcode:\t");
+	scanf("%s", (new_product->barcode));
+
+	int prod_index = ProductExists(super, new_product->barcode);
+
+	if (prod_index)
+	{
+		int availableToAdd;
+		printf("This product already exist, please enter the number of products to add\t");
+		scanf(" %d", &availableToAdd);
+		super->product_list[prod_index]->available += availableToAdd;
+	}
+	else 
+	{
+		printf("Please enter product name:\t");
+		scanf("\n%[^\n]", new_product->product_name);
+		printf("Please enter product category:\t");
+		scanf("\n%[^\n]", new_product->product_category);
+		printf("Please enter number of products to add:\t");
+		scanf(" %d", &new_product->available);
+		printf("Please enter the price of the product:\t");
+		scanf(" %lf", &new_product->price);
+		printf("Please enter expiration date of the product[dd/mm/yy]:\t");
+		scanf(" %s", &strDate);
+
+		// Check if can add, check amount and finally allocate if possible
+
+		FillDate(&strDate, new_product->expire_date);
+
+		// Add by ammount
+		realloc(super->product_list, sizeof(super->number_of_products) + sizeof(product*));
+
+		(super->product_list)[super->number_of_products] = new_product;
+		super->number_of_products++;
+
+		printf("The product %s -barcode:%s, added successfully\n", new_product->product_name, new_product->barcode);
+	}
+}
+
+void RemoveProduct(super_market* super) {
 
 }
 
-void RemoveProduct(super_market super) {
+void CheckExpiredProducts(super_market* super) {
 
 }
 
-void CheckExpiredProducts(super_market super) {
-
-}
-
-void PrintProducts(super_market super) {
+void PrintProducts(super_market* super) {
 	// TODO : Print is not finished
-	for (int i = 0; i < sizeof(&(super.product_list)); i++) {
-		product* prod = (*super.product_list + i);
+	for (int i = 0; i < sizeof(&(super->product_list)); i++) {
+		product* prod = (*super->product_list + i);
 
 		printf("%s", prod->barcode);
 	}
 }
 
-void UpdateProduct(super_market super) {
+void UpdateProduct(super_market* super) {
 
 }
 
@@ -131,8 +211,8 @@ int GetAction() {
 	scanf_s("%d", &res);
 
 	while (res > EXIT || res < ADD) {
-		printf("\nInvalid Action, plear retype your action:");
-		scanf_s("%d", &res);
+		printf("\nInvalid Action, please retype your action:");
+		scanf_s(" %d", &res);
 	}
 
 	return res;
@@ -141,7 +221,8 @@ int GetAction() {
 int main() {
 	super_market super;
 	int action = 0;
-	super.product_list = malloc(sizeof(product));
+	super.product_list = (product**)calloc(0, sizeof(product*));
+	super.number_of_products = 0;
 
 	action = GetAction();
 
@@ -149,19 +230,19 @@ int main() {
 		switch(action)
 		{
 			case ADD:
-				AddProduct(super);
+				AddProduct(&super);
 				break;
 			case REMOVE:
-				RemoveProduct(super);
+				RemoveProduct(&super);
 				break;
 			case CHECK_EXPIRED:
-				CheckExpiredProducts(super);
+				CheckExpiredProducts(&super);
 				break;
 			case PRINT:
-				PrintProducts(super);
+				PrintProducts(&super);
 				break;
 			case UPDATE:
-				UpdateProduct(super);
+				UpdateProduct(&super);
 				break;
 			default:
 				break;
