@@ -140,6 +140,13 @@ bool CanAddProducts(super_market* super, int amount) {
 	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
 }
 
+date* GetNewDate() {
+	date* new_date = (date*)malloc(sizeof(date));
+
+	if (new_date == NULL) exit(1);
+
+	return new_date;
+}
 
 product* GetNewProduct() {
 	/*
@@ -157,13 +164,12 @@ product* GetNewProduct() {
 	new_product->price = 0;
 	new_product->product_category = (char*)malloc(sizeof(char) * (MAX_CATEGORY_LENGTH + 1));
 	new_product->product_name = (char*)malloc(sizeof(char) * (MAX_PRODUCT_NAME_LENGTH + 1));
-	new_product->expire_date = (date*)malloc(sizeof(date));
+	new_product->expire_date = GetNewDate();
 
 	// Check if any allocations failed
 	if (new_product->barcode == NULL || 
 		new_product->product_category == NULL || 
-		new_product->product_name == NULL || 
-		new_product->expire_date == NULL) exit(1);
+		new_product->product_name == NULL) exit(1);
 
 	return new_product;
 }
@@ -287,7 +293,7 @@ void RemoveProduct(super_market* super) {
 }
 
 
-int _isExpired(char* inDate, date* prod_date){
+bool _isExpired(date* inDate, date* prod_date){
 	/*
 	Inputs: 
 			:inDate:    - date string in the required format.
@@ -296,15 +302,11 @@ int _isExpired(char* inDate, date* prod_date){
 	Functionality: Check if :inDate: > :prod_date:.
 	*/
 
-	int inDay = ((inDate[0] - '0') * 10) + (inDate[1] - '0');
-	int inMonth = ((inDate[3] - '0') * 10) + (inDate[4] - '0');
-	int inYear = ((inDate[6] - '0') * 10) + (inDate[7] - '0');
-
-	if (inYear > prod_date->year) return 1;
-	if (inMonth > prod_date->month) return 1;
-	if (inDay > prod_date->day) return 1;
+	if (inDate->year > prod_date->year) return true;
+	if (inDate->month > prod_date->month) return true;
+	if (inDate->day > prod_date->day) return true;
 	
-	return 0;
+	return false;
 }
 
 
@@ -340,8 +342,12 @@ void CheckExpiredProducts(super_market* super) {
 	printf(expired_date_check);
 	scanf("%s", date_to_check);
 
+	date* expired_date = GetNewDate();
+
+	FillDate(date_to_check, expired_date);
+
 	for (int counter=0; counter < super->number_of_products; counter++){
-		if (_isExpired(date_to_check, super->product_list[counter]->expire_date)){
+		if (_isExpired(expired_date, super->product_list[counter]->expire_date)){
 			if (flag ==0 ) {
 				// TFIRA, just stupid design. will fix.
 				printf(expired_products);
