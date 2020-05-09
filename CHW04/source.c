@@ -194,7 +194,7 @@ void AddProduct(super_market* super) {
 	// Guard
 	// More than 20 products cant be added
 	if (!CanAddProducts(super, 0)) {
-		printf("Can't add more products, not enough space!");
+		printf(too_much_products);
 		return;
 	}
 	
@@ -203,7 +203,7 @@ void AddProduct(super_market* super) {
 	product* new_product = GetNewProduct();
 
 	// Get Input, and add
-	printf("Please enter product barcode:\t");
+	printf(adding_product_barcode);
 	scanf("%s", (new_product->barcode));
 
 	int prod_index = GetProductIndex(super, new_product->barcode);
@@ -211,22 +211,22 @@ void AddProduct(super_market* super) {
 	if (prod_index != -1)
 	{
 		int availableToAdd;
-		printf("This product already exist, please enter the number of products to add\t");
+		printf(barcode_already_exist);
 		scanf(" %d", &availableToAdd);
 		super->product_list[prod_index]->available += availableToAdd;
 		printf("Additional %d products of %s added\n", availableToAdd, super->product_list[prod_index]->product_name);
 	}
 	else 
 	{
-		printf("Please enter product name:\t");
+		printf(adding_product_name);
 		scanf("\n%[^\n]", new_product->product_name);
-		printf("Please enter product category:\t");
+		printf(adding_product_category);
 		scanf("\n%[^\n]", new_product->product_category);
-		printf("Please enter number of products to add:\t");
+		printf(adding_product_number);
 		scanf(" %d", &new_product->available);
-		printf("Please enter the price of the product:\t");
+		printf(adding_product_price);
 		scanf(" %lf", &new_product->price);
-		printf("Please enter expiration date of the product[dd/mm/yy]:\t");
+		printf(adding_product_date);
 		scanf(" %s", &strDate);
 
 		// TODO : Check if can add, check amount and finally allocate if possible
@@ -278,6 +278,7 @@ void RemoveProduct(super_market* super) {
 				// No such product
 				printf(delete_barcode_cant_find);
 			}
+
 		}
 		_freeProduct(super->product_list[prod_idx]);
 		super->number_of_products -= 1; //decrement amount of products in the supermarket.
