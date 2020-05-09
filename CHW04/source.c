@@ -106,6 +106,18 @@ typedef struct super_market { product ** product_list; int number_of_products; }
 
 
 int GetProductIndex(super_market* super, char* productBarcode) {
+	/*
+	Inputs: 
+			:super: - pointer to the struct that holds supermarket data.
+			:productBarcode: - pointer to a barcode string.
+	Return: 
+			-1 if the product is not found, 
+			otherwise, it's index in the list.
+
+	Functionality: Find if a product is already in the supermarket, and get it's index.
+				   Used everywhere pretty much.
+	*/
+
 	for (int i = 0; i < super->number_of_products; i++) {
 		if (strcmp(productBarcode, super->product_list[i]->barcode) == 0) {
 			return i;
@@ -116,6 +128,15 @@ int GetProductIndex(super_market* super, char* productBarcode) {
 
 
 bool CanAddProducts(super_market* super, int amount) {
+	/*
+	Inputs: 
+			:super:  - pointer to the struct that holds supermarket data.
+			:amount: - how many products to add.
+	Return: 
+			1 if we can, 0 otherwise.
+
+	Functionality: Check if we can add :amount: products to the supermarket.
+	*/
 	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
 }
 
@@ -123,13 +144,13 @@ bool CanAddProducts(super_market* super, int amount) {
 product* GetNewProduct() {
 	/*
 	Inputs: None.
-	Return: A pointer to a block in memtory, allocated for a product.
+	Return: A pointer to a block in memory, allocated for a product.
 	Functionality: Allocate memory for the product we are about to add.
 	*/
 
 	product* new_product = (product*) malloc(sizeof(product));
 
-	if (new_product == NULL) exit(1);
+	if (new_product == NULL) exit(1); //check if we failed to allocate size for a product
 
 	new_product->barcode = (char*)malloc(sizeof(char) * (BARCODE_LENGTH + 1));
 	new_product->available = 0;
@@ -138,6 +159,7 @@ product* GetNewProduct() {
 	new_product->product_name = (char*)malloc(sizeof(char) * (MAX_PRODUCT_NAME_LENGTH + 1));
 	new_product->expire_date = (date*)malloc(sizeof(date));
 
+	// Check if any allocations failed
 	if (new_product->barcode == NULL || 
 		new_product->product_category == NULL || 
 		new_product->product_name == NULL || 
@@ -220,9 +242,48 @@ void AddProduct(super_market* super) {
 	}
 }
 
+void _freeProduct(product* prod){
+	/*
+	Inputs: :prod: - pointer to the product we want to free.
+	Return: None.
+	Functionality: Free dynamically allocated memory of a product.
+	*/
+
+	free(prod->product_name);
+	free(prod->product_category);
+	free(prod->expire_date);
+	free(prod);
+}
 
 void RemoveProduct(super_market* super) {
+	/*
+	Inputs: :super: - pointer to the struct that holds supermarket data.
+	Return: None.
+	Functionality: Remove a product from the supermarket, freeing all it's memory.
+	*/
 
+	char barcode[BARCODE_LENGTH+1];
+	int prod_idx = -1;
+
+	// Check if the store is empty
+	if (super->number_of_products == 0) {printf(store_empty); printf("\n");}
+	else {
+			while (prod_idx == -1){
+			printf(delete_barcode);
+			scanf("%s", barcode);
+
+			// Get the index of the product that we want to remove
+			prod_idx = GetProductIndex(super, barcode);
+			if (prod_idx == -1){
+				// No such product
+				printf(delete_barcode_cant_find);
+			}
+		}
+		_freeProduct(super->product_list[prod_idx]);
+		super->number_of_products -= 1; //decrement amount of products in the supermarket.
+		printf(delete_barcode_succeed);
+		printf("\n");
+	}
 }
 
 
@@ -245,6 +306,7 @@ int _isExpired(char* inDate, date* prod_date){
 	
 	return 0;
 }
+
 
 void _printExpired(super_market* super, int index){
 	/*
@@ -354,7 +416,7 @@ void UpdateProduct(super_market* super) {
 	Return: None.
 	Functionality: Function that updates a field in an existing product.
 	*/
-	char barcode[BARCODE_LENGTH] = {'\0'};
+	char barcode[BARCODE_LENGTH+1] = {'\0'};
 	int idx_to_update = -1, selection=0;
 
 	// Check if the supermarket is empty
@@ -385,7 +447,7 @@ void CleanupAndExit(super_market* super){
 	Functionality: Iterates over the pointer array and clears the allocated memory.
 	*/
 	for (int idx=0; idx < super->number_of_products; idx++){
-		free(super->product_list[idx]);
+		_freeProduct(super->product_list[idx]);
 	}
 
 	printf(exitProgram);
