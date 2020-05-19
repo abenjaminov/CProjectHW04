@@ -349,21 +349,15 @@ void CheckExpiredProducts(super_market* super) {
 	*/
 
 	char date_to_check[DATE_LENGTH+1];
-	int flag = 0;
 	printf(expired_date_check);
 	scanf("%s", date_to_check);
 
 	date* expired_date = GetNewDate();
 
 	FillDate(date_to_check, expired_date);
-
+	printf(expired_products);
 	for (int counter=0; counter < super->number_of_products; counter++){
 		if (_isExpired(expired_date, super->product_list[counter]->expire_date)){
-			if (flag ==0 ) {
-				// TFIRA, just stupid design. will fix.
-				printf(expired_products);
-				flag =1;
-				}
 			_printExpired(super, counter);
 		}
 	}
