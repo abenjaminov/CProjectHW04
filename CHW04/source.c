@@ -255,6 +255,7 @@ void _freeProduct(product* prod){
 	Functionality: Free dynamically allocated memory of a product.
 	*/
 
+	free(prod->barcode);
 	free(prod->product_name);
 	free(prod->product_category);
 	free(prod->expire_date);
@@ -287,7 +288,16 @@ void RemoveProduct(super_market* super) {
 
 		}
 		_freeProduct(super->product_list[prod_idx]);
+
+		// roll back indices to fill the gap
+		for (int i = prod_idx; i < super->number_of_products; i++){
+			super->product_list[i] = super->product_list[i+1];
+		}
+
 		super->number_of_products -= 1; //decrement amount of products in the supermarket.
+
+		// Re-allocate space for the newly shrunk product list
+		realloc(super->product_list, sizeof(product*)*super->number_of_products);
 		printf(delete_barcode_succeed);
 		printf("\n");
 	}
@@ -369,7 +379,6 @@ void PrintProducts(super_market* super) {
 
 	for (int i = 0; i < super->number_of_products; i++) {
 		product* prod = super->product_list[i];
-
 		printf("-------------\n");
 		printf("Product name: %s\n", prod->product_name);
 		printf("Product barcode: %s\n", prod->barcode);
