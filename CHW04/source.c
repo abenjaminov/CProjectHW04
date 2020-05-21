@@ -152,7 +152,7 @@ product* GetNewProduct() {
 	/*
 	Inputs: None.
 	Return: A pointer to a block in memory, allocated for a product.
-	Functionality: Allocate memory for the product we are about to add.
+	Functionality: Allocate memory for the product we are about to add, used as a constructor.
 	*/
 
 	product* new_product = (product*) malloc(sizeof(product));
@@ -345,8 +345,8 @@ void _printExpired(super_market* super, int index){
 	printf("%s", super->product_list[index]->barcode);
 	printf(expired_product_date);
 	printf("%d/%d/%d\n", super->product_list[index]->expire_date->day,
-					   super->product_list[index]->expire_date->month,
-					   super->product_list[index]->expire_date->year);
+					     super->product_list[index]->expire_date->month,
+					     super->product_list[index]->expire_date->year);
 }
 
 
@@ -495,6 +495,29 @@ int GetAction() {
 	return res;
 }
 
+void UserSelect(int enumerator, super_market* super){
+	switch(enumerator)
+		{
+		case ADD:
+			AddProduct(super);
+			break;
+		case REMOVE:
+			RemoveProduct(super);
+			break;
+		case CHECK_EXPIRED:
+			CheckExpiredProducts(super);
+			break;
+		case PRINT:
+			PrintProducts(super);
+			break;
+		case UPDATE:
+			UpdateProduct(super);
+			break;
+		default:
+			break;
+	}
+}
+
 
 int main() {
 	super_market* super = (super_market*)malloc(sizeof(super_market));
@@ -505,27 +528,7 @@ int main() {
 	action = GetAction();  // Get user selection
 
 	while (action != EXIT) {
-		switch(action)
-		{
-			case ADD:
-				AddProduct(super);
-				break;
-			case REMOVE:
-				RemoveProduct(super);
-				break;
-			case CHECK_EXPIRED:
-				CheckExpiredProducts(super);
-				break;
-			case PRINT:
-				PrintProducts(super);
-				break;
-			case UPDATE:
-				UpdateProduct(super);
-				break;
-			default:
-				break;
-		}
-
+		UserSelect(action, super);
 		action = GetAction();
 	}
 
