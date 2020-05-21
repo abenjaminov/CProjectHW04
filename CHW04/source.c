@@ -382,12 +382,13 @@ void PrintProducts(super_market* super) {
 
 	for (int i = 0; i < super->number_of_products; i++) {
 		product* prod = super->product_list[i];
+
 		printf("-------------\n");
 		printf("Product name: %s\n", prod->product_name);
 		printf("Product barcode: %s\n", prod->barcode);
 		printf("Product category: %s\n", prod->product_category);
 		printf("Product available quantity: %d\n", prod->available);
-		printf("Product price: %.3f\n", prod->price);
+		printf("Product price: %g\n", prod->price);
 		printf("Product expiration date: %d/%d/%d\n", prod->expire_date->day, prod->expire_date->month, prod->expire_date->year);
 	}
 }
@@ -494,10 +495,10 @@ int GetAction() {
 
 
 int main() {
-	super_market super;
+	super_market* super = (super_market*)malloc(sizeof(super_market*));
 	int action = 0;
-	super.product_list = (product**)calloc(0, sizeof(product*));
-	super.number_of_products = 0;
+	super->product_list = (product**)calloc(0, sizeof(product*));
+	super->number_of_products = 0;
 
 	action = GetAction();  // Get user selection
 
@@ -505,19 +506,19 @@ int main() {
 		switch(action)
 		{
 			case ADD:
-				AddProduct(&super);
+				AddProduct(super);
 				break;
 			case REMOVE:
-				RemoveProduct(&super);
+				RemoveProduct(super);
 				break;
 			case CHECK_EXPIRED:
-				CheckExpiredProducts(&super);
+				CheckExpiredProducts(super);
 				break;
 			case PRINT:
-				PrintProducts(&super);
+				PrintProducts(super);
 				break;
 			case UPDATE:
-				UpdateProduct(&super);
+				UpdateProduct(super);
 				break;
 			default:
 				break;
@@ -525,9 +526,8 @@ int main() {
 
 		action = GetAction();
 	}
+
 	// Exit was selected, clean up and exit.
-	CleanupAndExit(&super);
+	CleanupAndExit(super);
 	return 0;
 }
-
-//TODO: STRCOPY
