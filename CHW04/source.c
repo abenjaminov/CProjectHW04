@@ -140,6 +140,7 @@ bool CanAddProducts(super_market* super, int amount) {
 	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
 }
 
+
 date* GetNewDate() {
 	date* new_date = (date*)malloc(sizeof(date));
 
@@ -147,6 +148,7 @@ date* GetNewDate() {
 
 	return new_date;
 }
+
 
 product* GetNewProduct() {
 	/*
@@ -197,7 +199,6 @@ void AddProduct(super_market* super) {
 	Functionality: Add another item to the store as a product struct, populate all fields.
 	*/
 
-	// Guard
 	// More than 20 products cant be added
 	if (!CanAddProducts(super, 0)) {
 		printf(too_much_products);
@@ -211,7 +212,6 @@ void AddProduct(super_market* super) {
 
 	product* new_product = GetNewProduct();
 
-	// Get Input, and add
 	printf(adding_product_barcode);
 	scanf("%s", &temp_barcode);
 	strcpy(new_product->barcode, temp_barcode);
@@ -226,8 +226,7 @@ void AddProduct(super_market* super) {
 		super->product_list[prod_index]->available += availableToAdd;
 		printf("Additional %d products of %s added\n", availableToAdd, super->product_list[prod_index]->product_name);
 	}
-	else 
-	{
+	else {
 		printf(adding_product_name);
 		scanf("\n%[^\n]", &temp_name);
 		strcpy(new_product->product_name, temp_name);
@@ -251,10 +250,10 @@ void AddProduct(super_market* super) {
 		super->product_list = (product**)realloc(super->product_list, super->number_of_products * sizeof(product*));
 
 		(super->product_list)[super->number_of_products - 1] = new_product;
-
 		printf("The product %s -barcode:%s, added successfully\n", new_product->product_name, new_product->barcode);
 	}
 }
+
 
 void _freeProduct(product* prod){
 	/*
@@ -269,6 +268,7 @@ void _freeProduct(product* prod){
 	free(prod->expire_date);
 	free(prod);
 }
+
 
 void RemoveProduct(super_market* super) {
 	/*
@@ -325,7 +325,6 @@ bool _isExpired(date* inDate, date* prod_date){
 	if (inDate->year > prod_date->year) return true;
 	if (inDate->month > prod_date->month) return true;
 	if (inDate->day > prod_date->day) return true;
-	
 	return false;
 }
 
@@ -494,6 +493,7 @@ int GetAction() {
 	}
 	return res;
 }
+
 
 void UserSelect(int enumerator, super_market* super){
 	switch(enumerator)
