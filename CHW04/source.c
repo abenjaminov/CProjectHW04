@@ -204,13 +204,17 @@ void AddProduct(super_market* super) {
 		return;
 	}
 	
+	char temp_barcode[BARCODE_LENGTH+1];
+	char temp_name[MAX_PRODUCT_NAME_LENGTH+1];
+	char temp_category[MAX_CATEGORY_LENGTH+1];
 	char strDate[DATE_LENGTH + 1];
 
 	product* new_product = GetNewProduct();
 
 	// Get Input, and add
 	printf(adding_product_barcode);
-	scanf("%s", (new_product->barcode));
+	scanf("%s", &temp_barcode);
+	strcpy(new_product->barcode, temp_barcode);
 
 	int prod_index = GetProductIndex(super, new_product->barcode);
 
@@ -225,9 +229,13 @@ void AddProduct(super_market* super) {
 	else 
 	{
 		printf(adding_product_name);
-		scanf("\n%[^\n]", new_product->product_name);
+		scanf("\n%[^\n]", &temp_name);
+		strcpy(new_product->product_name, temp_name);
+
 		printf(adding_product_category);
-		scanf("\n%[^\n]", new_product->product_category);
+		scanf("\n%[^\n]", &temp_category);
+		strcpy(new_product->product_category, temp_name);
+
 		printf(adding_product_number);
 		scanf(" %d", &new_product->available);
 		printf(adding_product_price);
@@ -240,7 +248,7 @@ void AddProduct(super_market* super) {
 		FillDate(strDate, new_product->expire_date);
 
 		super->number_of_products++;
-		realloc(super->product_list, super->number_of_products * sizeof(product*));
+		super->product_list = (product**)realloc(super->product_list, super->number_of_products * sizeof(product*));
 
 		(super->product_list)[super->number_of_products - 1] = new_product;
 
@@ -287,6 +295,7 @@ void RemoveProduct(super_market* super) {
 			}
 
 		}
+		
 		_freeProduct(super->product_list[prod_idx]);
 
 		// roll back indices to fill the gap
@@ -378,7 +387,7 @@ void PrintProducts(super_market* super) {
 		printf("Product barcode: %s\n", prod->barcode);
 		printf("Product category: %s\n", prod->product_category);
 		printf("Product available quantity: %d\n", prod->available);
-		printf("Product price: %0.2f\n", prod->price);
+		printf("Product price: %.3f\n", prod->price);
 		printf("Product expiration date: %d/%d/%d\n", prod->expire_date->day, prod->expire_date->month, prod->expire_date->year);
 	}
 }
@@ -480,7 +489,6 @@ int GetAction() {
 		printf("\nInvalid Action, please retype your action:");
 		scanf(" %d", &res);
 	}
-
 	return res;
 }
 
@@ -521,3 +529,5 @@ int main() {
 	CleanupAndExit(&super);
 	return 0;
 }
+
+//TODO: STRCOPY
