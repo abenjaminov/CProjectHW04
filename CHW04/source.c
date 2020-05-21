@@ -464,12 +464,14 @@ void CleanupAndExit(super_market* super){
 	/*
 	Inputs: :super: - pointer to the struct that holds supermarket data.
 	Return: None.
-	Functionality: Iterates over the pointer array and clears the allocated memory.
+	Functionality: Iter
+	ates over the pointer array and clears the allocated memory.
 	*/
 	for (int idx=0; idx < super->number_of_products; idx++){
 		_freeProduct(super->product_list[idx]);
 	}
-
+	free (super->product_list);
+	free (super);
 	printf(exitProgram);
 }
 
@@ -495,7 +497,7 @@ int GetAction() {
 
 
 int main() {
-	super_market* super = (super_market*)malloc(sizeof(super_market*));
+	super_market* super = (super_market*)malloc(sizeof(super_market));
 	int action = 0;
 	super->product_list = (product**)calloc(0, sizeof(product*));
 	super->number_of_products = 0;
