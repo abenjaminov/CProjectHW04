@@ -233,7 +233,7 @@ void AddProduct(super_market* super) {
 
 		printf(adding_product_category);
 		scanf("\n%[^\n]", &temp_category);
-		strcpy(new_product->product_category, temp_name);
+		strcpy(new_product->product_category, temp_category);
 
 		printf(adding_product_number);
 		scanf(" %d", &new_product->available);
@@ -407,12 +407,22 @@ void _updateField(super_market* super, int idx_to_update, int field){
 		{
 		case UPDATE_PRODUCT_NAME:
 			printf(update_product_name);
-			scanf("\n%[^\n]", super->product_list[idx_to_update]->product_name);
+			char temp_name[MAX_PRODUCT_NAME_LENGTH];
+			scanf("\n%[^\n]", &temp_name);
+
+			realloc(super->product_list[idx_to_update]->product_name, strlen(temp_name));
+			strcpy(super->product_list[idx_to_update]->product_name, temp_name);
 			break;
+
 		case UPDATE_PRODUCT_CATEGORY:
 			printf(update_product_category);
-			scanf("\n%[^\n]", super->product_list[idx_to_update]->product_category);
+			char temp_category[MAX_CATEGORY_LENGTH];
+			scanf("\n%[^\n]", &temp_category);
+
+			realloc(super->product_list[idx_to_update]->product_category, strlen(temp_category));
+			strcpy(super->product_list[idx_to_update]->product_category, temp_category);
 			break;
+
 		case UPDATE_PRODUCT_QUANTITY:
 			printf(update_product_number);
 			scanf(" %d", &(super->product_list[idx_to_update]->available));
@@ -421,9 +431,12 @@ void _updateField(super_market* super, int idx_to_update, int field){
 			printf(update_product_price);
 			scanf(" %lf", &(super->product_list[idx_to_update]->price));
 			break;
+
 		case UPDATE_PRODUCT_EXPIRATION:
 			printf(update_product_date);
-			scanf(" %s", &(super->product_list[idx_to_update]->expire_date));
+			char temp_date[DATE_LENGTH];
+			scanf(" %s", &temp_date);
+			FillDate(temp_date, super->product_list[idx_to_update]->expire_date);
 			break;
 		}
 }
