@@ -199,7 +199,7 @@ void AddProduct(super_market* super) {
 	Functionality: Add another item to the store as a product struct, populate all fields.
 	*/
 
-	// More than 20 products cant be added
+	// Guard Expression : More than 20 products cant be added
 	if (!CanAddProducts(super, 0)) {
 		printf(too_much_products);
 		return;
@@ -216,15 +216,15 @@ void AddProduct(super_market* super) {
 	scanf("%s", &temp_barcode);
 	strcpy(new_product->barcode, temp_barcode);
 
-	int prod_index = GetProductIndex(super, new_product->barcode);
+	int existing_product_index = GetProductIndex(super, new_product->barcode);
 
-	if (prod_index != -1)
+	if (existing_product_index != -1)
 	{
 		int availableToAdd;
 		printf(barcode_already_exist);
 		scanf(" %d", &availableToAdd);
-		super->product_list[prod_index]->available += availableToAdd;
-		printf("Additional %d products of %s added\n", availableToAdd, super->product_list[prod_index]->product_name);
+		super->product_list[existing_product_index]->available += availableToAdd;
+		printf("Additional %d products of %s added\n", availableToAdd, super->product_list[existing_product_index]->product_name);
 	}
 	else {
 		printf(adding_product_name);
@@ -241,8 +241,6 @@ void AddProduct(super_market* super) {
 		scanf(" %lf", &new_product->price);
 		printf(adding_product_date);
 		scanf(" %s", &strDate);
-
-		// TODO : Check if can add, check amount and finally allocate if possible
 
 		FillDate(strDate, new_product->expire_date);
 
@@ -299,14 +297,14 @@ void RemoveProduct(super_market* super) {
 		_freeProduct(super->product_list[prod_idx]);
 
 		// roll back indices to fill the gap
-		for (int i = prod_idx; i < super->number_of_products; i++){
-			super->product_list[i] = super->product_list[i+1];
+		for (int i = prod_idx + 1; i <= super->number_of_products - 1; i++){
+			super->product_list[i-1] = super->product_list[i];
 		}
 
-		super->number_of_products -= 1; //decrement amount of products in the supermarket.
+		super->number_of_products--; //decrement amount of products in the supermarket.
 
 		// Re-allocate space for the newly shrunk product list
-		realloc(super->product_list, sizeof(product*)*super->number_of_products);
+		super->product_list = realloc(super->product_list, sizeof(product*) * super->number_of_products);
 		printf(delete_barcode_succeed);
 		printf("\n");
 	}
@@ -394,10 +392,49 @@ void PrintProducts(super_market* super) {
 	}
 }
 
+void UpdateProductExpirationDate(product* product)
+{
+	printf(update_product_date);
+	char temp_date[DATE_LENGTH];
+	scanf(" %s", &temp_date);
+	FillDate(temp_date, product->expire_date);
+}
 
-void _updateField(super_market* super, int idx_to_update, int field){
+void UpdateProductPrice(product* product)
+{
+	printf(update_product_price);
+	scanf(" %lf", &(product->price));
+}
+
+void UpdateProductQuantity(product* product)
+{
+	printf(update_product_number);
+	scanf(" %d", &(product->available));
+}
+
+void UpdateProductCategory(product* product)
+{
+	printf(update_product_category);
+	char temp_category[MAX_CATEGORY_LENGTH];
+	scanf("\n%[^\n]", &temp_category);
+
+	realloc(product->product_category, strlen(temp_category));
+	strcpy(product->product_category, temp_category);
+}
+
+void UpdateProductName(product* product)
+{
+	printf(update_product_name);
+	char temp_name[MAX_PRODUCT_NAME_LENGTH];
+	scanf("\n%[^\n]", &temp_name);
+
+	realloc(product->product_name, strlen(temp_name));
+	strcpy(product->product_name, temp_name);
+}
+
+void _updateField(super_market* super, int idx_to_update, int field) {
 	/*
-	Inputs: 
+	Inputs:
 			:super: - pointer to the struct that holds supermarket data. (super_market*)
 			:idx_to_update: - index of the product in the store. (int)
 			:field: - which field to update, based on popup message. (int)
@@ -406,41 +443,26 @@ void _updateField(super_market* super, int idx_to_update, int field){
 				   based on user selection.
 	*/
 	switch (field)
-		{
-		case UPDATE_PRODUCT_NAME:
-			printf(update_product_name);
-			char temp_name[MAX_PRODUCT_NAME_LENGTH];
-			scanf("\n%[^\n]", &temp_name);
+	{
+	case UPDATE_PRODUCT_NAME:
+		UpdateProductName(super->product_list[idx_to_update]);
+		break;
 
-			realloc(super->product_list[idx_to_update]->product_name, strlen(temp_name));
-			strcpy(super->product_list[idx_to_update]->product_name, temp_name);
-			break;
+	case UPDATE_PRODUCT_CATEGORY:
+		UpdateProductCategory(super->product_list[idx_to_update]);
+		break;
 
-		case UPDATE_PRODUCT_CATEGORY:
-			printf(update_product_category);
-			char temp_category[MAX_CATEGORY_LENGTH];
-			scanf("\n%[^\n]", &temp_category);
+	case UPDATE_PRODUCT_QUANTITY:
+		UpdateProductQuantity(super->product_list[idx_to_update]);
+		break;
+	case UPDATE_PRODUCT_PRICE:
+		UpdateProductPrice(super->product_list[idx_to_update]);
+		break;
 
-			realloc(super->product_list[idx_to_update]->product_category, strlen(temp_category));
-			strcpy(super->product_list[idx_to_update]->product_category, temp_category);
-			break;
-
-		case UPDATE_PRODUCT_QUANTITY:
-			printf(update_product_number);
-			scanf(" %d", &(super->product_list[idx_to_update]->available));
-			break;
-		case UPDATE_PRODUCT_PRICE:
-			printf(update_product_price);
-			scanf(" %lf", &(super->product_list[idx_to_update]->price));
-			break;
-
-		case UPDATE_PRODUCT_EXPIRATION:
-			printf(update_product_date);
-			char temp_date[DATE_LENGTH];
-			scanf(" %s", &temp_date);
-			FillDate(temp_date, super->product_list[idx_to_update]->expire_date);
-			break;
-		}
+	case UPDATE_PRODUCT_EXPIRATION:
+		UpdateProductExpirationDate(super->product_list[idx_to_update]);
+		break;
+	}
 }
 
 
@@ -451,19 +473,21 @@ void UpdateProduct(super_market* super) {
 	Functionality: Function that updates a field in an existing product.
 	*/
 	char barcode[BARCODE_LENGTH+1] = {'\0'};
-	int idx_to_update = -1, selection=0;
+	int idx_to_update = -1, selection = 0;
 
 	// Check if the supermarket is empty
 	if (super->number_of_products == 0){
 		printf("No products in the store!\n");
 	}
 	else{
+		printf(update_barcode);
+		scanf("%s", barcode);
+
 		// Ask for ther user's barcode
 		while (idx_to_update == -1){
-			printf(update_barcode);
-			scanf("%s", barcode);
+			printf(update_barcode_notFound);
+
 			idx_to_update = GetProductIndex(super, barcode);
-			if (idx_to_update == -1) printf(update_barcode_notFound);
 		}
 
 		// update product at :idx_to_update: with the new details:
@@ -533,12 +557,18 @@ void UserSelect(int enumerator, super_market* super){
 	}
 }
 
-
-int main() {
+super_market* GetNewSupermarket() {
 	super_market* super = (super_market*)malloc(sizeof(super_market));
 	int action = 0;
 	super->product_list = (product**)calloc(0, sizeof(product*));
 	super->number_of_products = 0;
+
+	return super;
+}
+
+int main() {
+	super_market* super = GetNewSupermarket();
+	int action = 0;
 
 	action = GetAction();  // Get user selection
 
