@@ -383,9 +383,9 @@ void PrintProducts(super_market* super) {
 	*/
 	if (super->number_of_products == 0) printf(print_no_products);
 	else{
+		printf("~~~~~~~~~~~~~~~All Products~~~~~~~~~~~~~~~\n");
 		for (int i = 0; i < super->number_of_products; i++) {
 			product* prod = super->product_list[i];
-			printf("~~~~~~~~~~~~~~~All Products~~~~~~~~~~~~~~~\n");
 			printf("-------------\n");
 			printf("Product name: %s\n", prod->product_name);
 			printf("Product barcode: %s\n", prod->barcode);
@@ -567,7 +567,6 @@ void UserSelect(int enumerator, super_market* super){
 
 super_market* GetNewSupermarket() {
 	super_market* super = (super_market*)malloc(sizeof(super_market));
-	int action = 0;
 	super->product_list = (product**)calloc(0, sizeof(product*));
 	super->number_of_products = 0;
 
