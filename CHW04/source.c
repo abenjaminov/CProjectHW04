@@ -144,7 +144,7 @@ bool CanAddProducts(super_market* super, int amount) {
 date* GetNewDate() {
 	date* new_date = (date*)malloc(sizeof(date));
 
-	if (new_date == NULL) exit(1);
+	if (new_date == NULL) return NULL;
 
 	return new_date;
 }
@@ -159,7 +159,7 @@ product* GetNewProduct() {
 
 	product* new_product = (product*) malloc(sizeof(product));
 
-	if (new_product == NULL) exit(1); //check if we failed to allocate size for a product
+	if (new_product == NULL) return NULL; //check if we failed to allocate size for a product
 
 	new_product->barcode = (char*)malloc(sizeof(char) * (BARCODE_LENGTH + 1));
 	new_product->available = 0;
@@ -171,7 +171,8 @@ product* GetNewProduct() {
 	// Check if any allocations failed
 	if (new_product->barcode == NULL || 
 		new_product->product_category == NULL || 
-		new_product->product_name == NULL) exit(1);
+		new_product->product_name == NULL || 
+		new_product->expire_date == NULL) return NULL;
 
 	return new_product;
 }
@@ -211,6 +212,8 @@ void AddProduct(super_market* super) {
 	char strDate[DATE_LENGTH + 1];
 
 	product* new_product = GetNewProduct();
+
+	if (new_product == NULL) return;
 
 	printf(adding_product_barcode);
 	scanf("%s", &temp_barcode);
@@ -360,6 +363,8 @@ void CheckExpiredProducts(super_market* super) {
 
 	date* expired_date = GetNewDate();
 
+	if (expired_date == NULL) return;
+
 	FillDate(date_to_check, expired_date);
 	printf(expired_products);
 	for (int counter=0; counter < super->number_of_products; counter++){
@@ -391,6 +396,8 @@ void PrintProducts(super_market* super) {
 		}
 	}
 }
+
+#pragma region Update Product functions
 
 void UpdateProductExpirationDate(product* product)
 {
@@ -431,6 +438,7 @@ void UpdateProductName(product* product)
 	realloc(product->product_name, strlen(temp_name));
 	strcpy(product->product_name, temp_name);
 }
+#pragma endregion
 
 void _updateField(super_market* super, int idx_to_update, int field) {
 	/*
