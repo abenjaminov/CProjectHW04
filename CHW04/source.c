@@ -42,7 +42,7 @@ const char * main_interface = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"\
 
 //operation 1 constant strings
 const char *  adding_product_barcode = "Please enter product barcode:";
-const char * barcode_already_exist = "This product already exist, please enter the number of products to add:";
+const char * barcode_already_exist = "This product already exist, please enter the number of products to add: ";
 const char * too_much_products = "Can't add more products, not enough space";
 const char * adding_product_name = "Please enter product name:";
 const char * adding_product_category = "Please enter product category:";
@@ -52,22 +52,22 @@ const char * adding_product_date = "Please enter expire date of the product[dd/m
 
 
 //operation 2 constant strings
-const char * store_empty = "\nThe store is empty!";
-const char * delete_barcode = "\nPlease enter product barcode you want to delete:";
-const char * delete_barcode_cant_find = "\nCouldn't find the product barcode, try again...";
-const char * delete_barcode_succeed = "\nThe product deleted successfully!";
+const char * store_empty = "The store is empty!";
+const char * delete_barcode = "Please enter product barcode you want to delete:";
+const char * delete_barcode_cant_find = "Couldn't find the product barcode, try again...\n";
+const char * delete_barcode_succeed = "The product deleted successfully!";
 
 
 //operation 3 constant strings
-const char * expired_date_check = "\nWhat date you want to check[dd/mm/yy]:";
-const char * expired_products = "\n~~~~~~~~~~~~~~~Expired Products~~~~~~~~~~~~~~~\n";
+const char * expired_date_check = "What date you want to check[dd/mm/yy]:";
+const char * expired_products = "~~~~~~~~~~~~~~~Expired Products~~~~~~~~~~~~~~~\n";
 const char * expired_product_name = "Product name: ";
 const char * expired_product_barcode = "\nProduct barcode: ";
 const char * expired_product_date = "\nProduct expire date: ";
 
 
 //operation 4 constant strings
-const char * print_no_products = "\nNo products in the store!\n";
+const char * print_no_products = "No products in the store!\n";
 const char * print_products = "\n----------";
 const char * print_product_name = "\nProduct name: ";
 const char * print_product_barcode = "\nProduct barcode: ";
@@ -79,20 +79,20 @@ const char * print_total_number = "\nTotal number of products: ";
 
 
 //operation 5 constant strings
-const char * update_barcode = "\nPlease enter product barcode you want to update:";
-const char * update_barcode_notFound = "\nCouldn't find the product barcode, try again...";
-const char * update_interface_string = ("\nWhat do you want to update?\n"\
+const char * update_barcode = "Please enter product barcode you want to update:";
+const char * update_barcode_notFound = "Couldn't find the product barcode, try again...\n";
+const char * update_interface_string = ("What do you want to update?\n"\
 	"        1. Product name\n"\
 	"        2. Product category\n"\
 	"        3. Product quantity\n"\
 	"        4. Product price\n"\
 	"        5. Product expire date\n"\
 	"Please choose operation [1-5]:");
-const char * update_product_name = "\nPlease enter new product name:";
-const char * update_product_category = "\nPlease enter new product category:";
-const char * update_product_number = "\nPlease enter new product quantity:";
-const char * update_product_price = "\nPlease enter new product price:";
-const char * update_product_date = "\nPlease enter new product expire date[dd/mm/yy]:";
+const char * update_product_name = "Please enter new product name:";
+const char * update_product_category = "Please enter new product category:";
+const char * update_product_number = "Please enter new product quantity:";
+const char * update_product_price = "Please enter new product price:";
+const char * update_product_date = "Please enter new product expire date[dd/mm/yy]:";
 
 
 //operation 6 constant strings
@@ -250,7 +250,7 @@ void AddProduct(super_market* super) {
 		super->product_list = (product**)realloc(super->product_list, super->number_of_products * sizeof(product*));
 
 		(super->product_list)[super->number_of_products - 1] = new_product;
-		printf("The product %s -barcode:%s, added successfully\n", new_product->product_name, new_product->barcode);
+		printf("The product %s -barcode:%s ,added successfully\n", new_product->product_name, new_product->barcode);
 	}
 }
 
@@ -323,8 +323,8 @@ bool _isExpired(date* inDate, date* prod_date){
 	*/
 
 	if (inDate->year > prod_date->year) return true;
-	if (inDate->month > prod_date->month) return true;
-	if (inDate->day > prod_date->day) return true;
+	if ((inDate->month > prod_date->month) && (inDate->year == prod_date->year)) return true;
+	if ((inDate->day > prod_date->day) && (inDate->month == prod_date->month)) return true;
 	return false;
 }
 
@@ -378,17 +378,19 @@ void PrintProducts(super_market* super) {
 	Return: None.
 	Functionality: Print all fields of all products in the store.
 	*/
-
-	for (int i = 0; i < super->number_of_products; i++) {
-		product* prod = super->product_list[i];
-
-		printf("-------------\n");
-		printf("Product name: %s\n", prod->product_name);
-		printf("Product barcode: %s\n", prod->barcode);
-		printf("Product category: %s\n", prod->product_category);
-		printf("Product available quantity: %d\n", prod->available);
-		printf("Product price: %g\n", prod->price);
-		printf("Product expiration date: %d/%d/%d\n", prod->expire_date->day, prod->expire_date->month, prod->expire_date->year);
+	if (super->number_of_products == 0) printf(print_no_products);
+	else{
+		for (int i = 0; i < super->number_of_products; i++) {
+			product* prod = super->product_list[i];
+			printf("~~~~~~~~~~~~~~~All Products~~~~~~~~~~~~~~~\n");
+			printf("-------------\n");
+			printf("Product name: %s\n", prod->product_name);
+			printf("Product barcode: %s\n", prod->barcode);
+			printf("Product category: %s\n", prod->product_category);
+			printf("Product available quantity: %d\n", prod->available);
+			printf("Product price: %g\n", prod->price);
+			printf("Product expiration date: %d/%d/%d\n", prod->expire_date->day, prod->expire_date->month, prod->expire_date->year);
+		}
 	}
 }
 
@@ -461,7 +463,7 @@ void UpdateProduct(super_market* super) {
 			printf(update_barcode);
 			scanf("%s", barcode);
 			idx_to_update = GetProductIndex(super, barcode);
-			printf(update_barcode_notFound);
+			if (idx_to_update == -1) printf(update_barcode_notFound);
 		}
 
 		// update product at :idx_to_update: with the new details:
