@@ -30,14 +30,14 @@ typedef int bool;
 const char * main_interface = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"\
 "Welcome to CORONA market!\n"\
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"\
-"Manage market menu :\n"\
+"Manage market menu:\n"\
 "	1. Add product\n"\
 "	2. Remove product\n"\
 "	3. Check which products are expired\n"\
 "	4. Print all the products\n"\
 "	5. Update product\n"\
 "	6. EXIT SYSTEM\n"\
-"Please choose operation[1 - 6]:";
+"Please choose operation [1 - 6]:";
 
 
 //operation 1 constant strings
