@@ -138,7 +138,6 @@ int GetProductIndex(super_market* super, char* productBarcode) {
 	return -1;
 }
 
-
 bool CanAddProducts(super_market* super, int amount) {
 	/*
 	Inputs: 
@@ -151,7 +150,6 @@ bool CanAddProducts(super_market* super, int amount) {
 	*/
 	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
 }
-
 
 date* GetNewDate() {
 	date* new_date = (date*)malloc(sizeof(date));
@@ -225,7 +223,6 @@ product* GetNewProduct() {
 	return new_product;
 }
 
-
 void FillDate(char* strDate, date* date) {
 	/*
 	Inputs: 
@@ -239,7 +236,6 @@ void FillDate(char* strDate, date* date) {
 	date->month = ((strDate[3] - '0') * 10) + (strDate[4] - '0');
 	date->year = ((strDate[6] - '0') * 10) + ((strDate[7] - '0') * 1);
 }
-
 
 void AddProduct(super_market* super) {
 	/*
@@ -303,7 +299,6 @@ void AddProduct(super_market* super) {
 	}
 }
 
-
 void RemoveProduct(super_market* super) {
 	/*
 	Inputs: :super: - pointer to the struct that holds supermarket data.
@@ -341,7 +336,7 @@ void RemoveProduct(super_market* super) {
 		// Re-allocate space for the newly shrunk product list
 		super->product_list = realloc(super->product_list, sizeof(product*) * super->number_of_products);
 
-		if (super->product_list == NULL)
+		if (super->product_list == NULL && super->number_of_products > 0)
 		{ 
 			ExitApplicationWithError(APPLICATION_ERROR); // If product list is lost and now null we should end the program since the products are lost
 		}
@@ -351,7 +346,6 @@ void RemoveProduct(super_market* super) {
 		}
 	}
 }
-
 
 bool _isExpired(date* inDate, date* prod_date){
 	/*
@@ -367,7 +361,6 @@ bool _isExpired(date* inDate, date* prod_date){
 	if ((inDate->day > prod_date->day) && (inDate->month == prod_date->month)) return true;
 	return false;
 }
-
 
 void _printExpired(super_market* super, int index){
 	/*
@@ -387,7 +380,6 @@ void _printExpired(super_market* super, int index){
 					     super->product_list[index]->expire_date->month,
 					     super->product_list[index]->expire_date->year);
 }
-
 
 void CheckExpiredProducts(super_market* super) {
 	/*
@@ -412,7 +404,6 @@ void CheckExpiredProducts(super_market* super) {
 		}
 	}
 }
-
 
 void PrintProducts(super_market* super) {
 	/*
@@ -512,7 +503,6 @@ void _updateField(super_market* super, int idx_to_update, int field) {
 	}
 }
 
-
 void UpdateProduct(super_market* super) {
 	/*
 	Inputs: :super: - pointer to the struct that holds supermarket data.
@@ -560,7 +550,6 @@ void CleanupAndExit(super_market* super){
 	printf(exitProgram);
 }
 
-
 int GetAction() {
 	/*
 	Inputs: None.
@@ -580,8 +569,7 @@ int GetAction() {
 	return res;
 }
 
-
-void UserSelect(int enumerator, super_market* super){
+void UserSelect(int enumerator, super_market* super) {
 	switch(enumerator)
 		{
 		case ADD:
