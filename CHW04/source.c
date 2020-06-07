@@ -517,10 +517,11 @@ void UpdateProduct(super_market* super) {
 		printf("No products in the store!\n");
 	}
 	else{
+		// Ask for ther user's barcode
 		printf(update_barcode);
 		scanf("%s", barcode);
-
-		// Ask for ther user's barcode
+		idx_to_update = GetProductIndex(super, barcode);
+		
 		while (idx_to_update == -1){
 			printf(update_barcode_notFound);
 			scanf("%s", barcode);
