@@ -98,12 +98,24 @@ const char * update_product_date = "Please enter new product expire date[dd/mm/y
 //operation 6 constant strings
 const char * exitProgram = "\nexit...";
 
+const char * APPLICATION_ERROR = "Application Error";
+
 // ---------- TYPEDEFS -----------------
 
 typedef struct date { int year; int month; int day; } date;
 typedef struct product { char * product_name; char * product_category; char * barcode; int available; double price; date * expire_date; } product;
 typedef struct super_market { product ** product_list; int number_of_products; } super_market;
 
+
+void ExitApplicationWithError(const char * errorMessage) {
+	/*
+	Inputs:
+	:message: The error message to display
+	Functionality: Print the error message and exit the application with an error status
+	*/
+	printf(errorMessage);
+	exit(1); 
+}
 
 int GetProductIndex(super_market* super, char* productBarcode) {
 	/*
@@ -126,7 +138,6 @@ int GetProductIndex(super_market* super, char* productBarcode) {
 	return -1;
 }
 
-
 bool CanAddProducts(super_market* super, int amount) {
 	/*
 	Inputs: 
@@ -140,7 +151,6 @@ bool CanAddProducts(super_market* super, int amount) {
 	return super->number_of_products + amount <= MAX_NUM_PRODUCTS;
 }
 
-
 date* GetNewDate() {
 	date* new_date = (date*)malloc(sizeof(date));
 
@@ -149,6 +159,19 @@ date* GetNewDate() {
 	return new_date;
 }
 
+void _freeProduct(product* prod) {
+	/*
+	Inputs: :prod: - pointer to the product we want to free.
+	Return: None.
+	Functionality: Free dynamically allocated memory of a product.
+	*/
+
+	free(prod->barcode);
+	free(prod->product_name);
+	free(prod->product_category);
+	free(prod->expire_date);
+	free(prod);
+}
 
 product* GetNewProduct() {
 	/*
@@ -162,21 +185,43 @@ product* GetNewProduct() {
 	if (new_product == NULL) return NULL; //check if we failed to allocate size for a product
 
 	new_product->barcode = (char*)malloc(sizeof(char) * (BARCODE_LENGTH + 1));
+
+	if (new_product->barcode == NULL) {
+		free(new_product);
+		return NULL;
+	}
+
 	new_product->available = 0;
 	new_product->price = 0;
 	new_product->product_category = (char*)malloc(sizeof(char) * (MAX_CATEGORY_LENGTH + 1));
+
+	if (new_product->product_category == NULL) {
+		free(new_product);
+		free(new_product->barcode);
+		return NULL;
+	}
+
 	new_product->product_name = (char*)malloc(sizeof(char) * (MAX_PRODUCT_NAME_LENGTH + 1));
+
+	if (new_product->product_name == NULL) {
+		free(new_product);
+		free(new_product->barcode);
+		free(new_product->product_category);
+		return NULL;
+	}
+
 	new_product->expire_date = GetNewDate();
 
-	// Check if any allocations failed
-	if (new_product->barcode == NULL || 
-		new_product->product_category == NULL || 
-		new_product->product_name == NULL || 
-		new_product->expire_date == NULL) return NULL;
+	if (new_product->expire_date == NULL) {
+		free(new_product);
+		free(new_product->barcode);
+		free(new_product->product_category);
+		free(new_product->product_name);
+		return NULL;
+	}
 
 	return new_product;
 }
-
 
 void FillDate(char* strDate, date* date) {
 	/*
@@ -191,7 +236,6 @@ void FillDate(char* strDate, date* date) {
 	date->month = ((strDate[3] - '0') * 10) + (strDate[4] - '0');
 	date->year = ((strDate[6] - '0') * 10) + ((strDate[7] - '0') * 1);
 }
-
 
 void AddProduct(super_market* super) {
 	/*
@@ -255,22 +299,6 @@ void AddProduct(super_market* super) {
 	}
 }
 
-
-void _freeProduct(product* prod){
-	/*
-	Inputs: :prod: - pointer to the product we want to free.
-	Return: None.
-	Functionality: Free dynamically allocated memory of a product.
-	*/
-
-	free(prod->barcode);
-	free(prod->product_name);
-	free(prod->product_category);
-	free(prod->expire_date);
-	free(prod);
-}
-
-
 void RemoveProduct(super_market* super) {
 	/*
 	Inputs: :super: - pointer to the struct that holds supermarket data.
@@ -284,7 +312,7 @@ void RemoveProduct(super_market* super) {
 	// Check if the store is empty
 	if (super->number_of_products == 0) {printf(store_empty); printf("\n");}
 	else {
-			while (prod_idx == -1){
+			while (prod_idx == -1) {
 			printf(delete_barcode);
 			scanf("%s", barcode);
 
@@ -294,7 +322,6 @@ void RemoveProduct(super_market* super) {
 				// No such product
 				printf(delete_barcode_cant_find);
 			}
-
 		}
 		
 		_freeProduct(super->product_list[prod_idx]);
@@ -308,11 +335,17 @@ void RemoveProduct(super_market* super) {
 
 		// Re-allocate space for the newly shrunk product list
 		super->product_list = realloc(super->product_list, sizeof(product*) * super->number_of_products);
-		printf(delete_barcode_succeed);
-		printf("\n");
+
+		if (super->product_list == NULL && super->number_of_products > 0)
+		{ 
+			ExitApplicationWithError(APPLICATION_ERROR); // If product list is lost and now null we should end the program since the products are lost
+		}
+		else {
+			printf(delete_barcode_succeed);
+			printf("\n");
+		}
 	}
 }
-
 
 bool _isExpired(date* inDate, date* prod_date){
 	/*
@@ -328,7 +361,6 @@ bool _isExpired(date* inDate, date* prod_date){
 	if ((inDate->day > prod_date->day) && (inDate->month == prod_date->month)) return true;
 	return false;
 }
-
 
 void _printExpired(super_market* super, int index){
 	/*
@@ -348,7 +380,6 @@ void _printExpired(super_market* super, int index){
 					     super->product_list[index]->expire_date->month,
 					     super->product_list[index]->expire_date->year);
 }
-
 
 void CheckExpiredProducts(super_market* super) {
 	/*
@@ -373,7 +404,6 @@ void CheckExpiredProducts(super_market* super) {
 		}
 	}
 }
-
 
 void PrintProducts(super_market* super) {
 	/*
@@ -473,7 +503,6 @@ void _updateField(super_market* super, int idx_to_update, int field) {
 	}
 }
 
-
 void UpdateProduct(super_market* super) {
 	/*
 	Inputs: :super: - pointer to the struct that holds supermarket data.
@@ -521,7 +550,6 @@ void CleanupAndExit(super_market* super){
 	printf(exitProgram);
 }
 
-
 int GetAction() {
 	/*
 	Inputs: None.
@@ -541,8 +569,7 @@ int GetAction() {
 	return res;
 }
 
-
-void UserSelect(int enumerator, super_market* super){
+void UserSelect(int enumerator, super_market* super) {
 	switch(enumerator)
 		{
 		case ADD:
@@ -567,7 +594,15 @@ void UserSelect(int enumerator, super_market* super){
 
 super_market* GetNewSupermarket() {
 	super_market* super = (super_market*)malloc(sizeof(super_market));
+	if (super == NULL) {
+		ExitApplicationWithError(APPLICATION_ERROR);
+	}
+
 	super->product_list = (product**)calloc(0, sizeof(product*));
+	if (super->product_list == NULL) {
+		ExitApplicationWithError(APPLICATION_ERROR);
+	}
+
 	super->number_of_products = 0;
 
 	return super;
