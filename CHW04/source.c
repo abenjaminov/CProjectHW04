@@ -267,6 +267,8 @@ void AddProduct(super_market* super) {
 
 	if (existing_product_index != -1)
 	{
+		_freeProduct(new_product);
+
 		int availableToAdd;
 		printf(barcode_already_exist);
 		scanf(" %d", &availableToAdd);
@@ -403,6 +405,8 @@ void CheckExpiredProducts(super_market* super) {
 			_printExpired(super, counter);
 		}
 	}
+
+	free(expired_date);
 }
 
 void PrintProducts(super_market* super) {
@@ -622,5 +626,6 @@ int main() {
 
 	// Exit was selected, clean up and exit.
 	CleanupAndExit(super);
+
 	return 0;
 }
