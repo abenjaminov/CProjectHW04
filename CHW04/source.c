@@ -358,7 +358,7 @@ bool _isExpired(date* inDate, date* prod_date){
 
 	if (inDate->year > prod_date->year) return true;
 	if ((inDate->month > prod_date->month) && (inDate->year == prod_date->year)) return true;
-	if ((inDate->day > prod_date->day) && (inDate->month == prod_date->month)) return true;
+	if ((inDate->day > prod_date->day) && (inDate->month == prod_date->month) && (inDate->year == prod_date->year)) return true;
 	return false;
 }
 
