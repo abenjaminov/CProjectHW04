@@ -455,7 +455,7 @@ void UpdateProductCategory(product* product)
 	char temp_category[MAX_CATEGORY_LENGTH];
 	scanf("\n%[^\n]", &temp_category);
 
-	realloc(product->product_category, strlen(temp_category));
+	realloc(product->product_category, strlen(temp_category)+1);
 	strcpy(product->product_category, temp_category);
 }
 
@@ -465,7 +465,7 @@ void UpdateProductName(product* product)
 	char temp_name[MAX_PRODUCT_NAME_LENGTH];
 	scanf("\n%[^\n]", &temp_name);
 
-	realloc(product->product_name, strlen(temp_name));
+	realloc(product->product_name, strlen(temp_name)+1);
 	strcpy(product->product_name, temp_name);
 }
 #pragma endregion
