@@ -494,7 +494,7 @@ void UpdateProduct(super_market* super) {
 		// Ask for ther user's barcode
 		while (idx_to_update == -1){
 			printf(update_barcode_notFound);
-
+			scanf("%s", barcode);
 			idx_to_update = GetProductIndex(super, barcode);
 		}
 
